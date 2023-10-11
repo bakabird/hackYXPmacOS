@@ -1,7 +1,7 @@
 {
   "name": "hack-yxp-macOs",
   "version": "1.0.0",
-  "description": "",
+  "description": "hack 'Yi Xian: The Cultivation Card Game' on macOs running on an M1/M2 cpu",
   "main": "yxp-hacks.js",
   "scripts": {
     "inject": "frida 弈仙牌 -l yxp-hacks.bundle.js",
