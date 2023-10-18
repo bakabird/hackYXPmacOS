@@ -152,6 +152,13 @@ https://github.com/iddoeldor/frida-snippets/blob/master/README.md
 Todo: 
 1. Get "Type" from netstandard.dll [X]
 2. Get Type from image `netstandard`
-3. 
 4. Run "Type.GetType()"
 
+Well, it seems infeasible... the class and method to get MethodInfo still need mono-api to fetch the jit-addres to be called ...
+
+
+## 2023-10-19
+
+回到原点，决定试试 NaResovler + frida 替换 dll 的方式来做注入试试看。
+
+结论：一样的 `timeout`
