@@ -5,12 +5,14 @@
   "main": "yxp-hacks.js",
   "scripts": {
     "inject": "frida 弈仙牌 -l yxp-hacks.bundle.js",
-    "rollup": "rollup -w --config rollup.config.js --bundleConfigAsCjs"
+    "rollup": "rollup --config rollup.config.js --bundleConfigAsCjs",
+    "rollup-watch": "rollup -w --config rollup.config.js --bundleConfigAsCjs"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "frida-mono-kit": "^0.0.1"
+    "frida-mono-kit": "^0.0.1",
+    "gnfun": "^0.1.0"
   },
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^15.2.2"

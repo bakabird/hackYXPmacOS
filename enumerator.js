@@ -1,4 +1,5 @@
 import { MonoApi, MonoApiHelper } from 'frida-mono-kit'
+import { AsyncRunner } from 'gnfun';
 
 let Enumerator = {
   // memory readers
@@ -164,11 +165,30 @@ let Enumerator = {
     }
   },
 
+  getAssembly: function (name) {
+    let k = 0;
+    let self = this;
+    MonoApiHelper.AssemblyForeach(function (assemb) {
+      var image = MonoApi.mono_assembly_get_image(assemb);
+      var image_name = MonoApi.mono_image_get_name(image);
+      if (name == image_name) {
+        k = image;
+      }
+      // console.log(image_name)
+      console.log(image_name.readUtf8String())
+      // console.log("------");
+      return 1;
+    });
+    return k;
+  },
+
   // enumerators
   getClass: function (name) {
     var k = 0;
     MonoApiHelper.AssemblyForeach(function (assemb) {
       var image = MonoApi.mono_assembly_get_image(assemb);
+      var imagename = MonoApi.mono_image_get_name(image);
+      console.log(imagename.readUtf8String());
       var klass = MonoApiHelper.ClassFromName(image, name);
       if (klass != 0) {
         k = klass;
@@ -179,16 +199,24 @@ let Enumerator = {
   },
 
   getMethods: function (monoClass) {
+    console.log('getMethods from ' + monoClass)
     var ret = {};
     var methods = MonoApiHelper.ClassGetMethods(monoClass)
+    console.log('getMethods from ' + monoClass + " step1")
     for (var i = methods.length - 1; i >= 0; i--) {
       var method = methods[i];
+      console.log('getMethods from ' + monoClass + " step methodIndex for " + method + " " + i + " start");
       var name = MonoApiHelper.MethodGetName(method, monoClass);
+      var jit_address = MonoApi.mono_class_get_method_from_name(monoClass, Memory.allocUtf8String(name), -1);
+      console.log('getMethods from ' + monoClass + " step methodIndex for " + method + " " + i + " methodGetNameDone " + name);
       ret[name] = {
         address: '0x' + parseInt(method).toString(16),
-        jit_address: '0x' + parseInt(MonoApi.mono_compile_method(method)).toString(16)
+        jit_address
+        // jit_address: '0x' + parseInt(MonoApi.mono_compile_method(method)).toString(16)
       };
+      console.log('getMethods from ' + monoClass + " step methodIndex for " + method + " " + i);
     }
+    console.log('getMethods from ' + monoClass + " step last")
     return ret;
   },
 
@@ -204,6 +232,7 @@ let Enumerator = {
   },
 
   getFields: function (monoClass) {
+    console.log('getFields from ' + monoClass)
     var ret = {};
     var fields = MonoApiHelper.ClassGetFields(monoClass)
     for (var i = fields.length - 1; i >= 0; i--) {
@@ -220,6 +249,12 @@ let Enumerator = {
 
   enumerateClass: function (name) {
     var klass = this.getClass(name);
+    if (klass == 0) {
+      console.log('Class "' + name + '" not found.');
+      return null;
+    } else {
+      console.log("Class founded: " + name);
+    }
     var ret = {
       address: klass,
       methods: this.getMethods(klass),
@@ -243,6 +278,30 @@ let Enumerator = {
   // helpers
   prettyPrint: function (something) {
     console.log(JSON.stringify(something, null, 4));
+  },
+
+  Test: function (name) {
+    var klass = this.getClass(name);
+    if (klass == 0) {
+      console.log('Class "' + name + '" not found.');
+      return null;
+    }
+    var methods = MonoApiHelper.ClassGetMethods(klass);
+    var asyncRunner = new AsyncRunner();
+    for (const method of methods) {
+      asyncRunner.Then((c) => {
+        setTimeout(() => {
+          var name = MonoApiHelper.MethodGetName(method);
+          var jit_address = MonoApi.mono_class_get_method_from_name(klass, Memory.allocUtf8String(name), -1);
+          // var jit_address = '0x' + parseInt(MonoApi.mono_compile_method(method)).toString(16);
+          console.log(name + " " + jit_address);
+          c();
+        }, 10)
+      })
+    }
+    asyncRunner.Start(() => {
+      console.log("All Done");
+    });
   },
 };
 

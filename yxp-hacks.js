@@ -1,8 +1,37 @@
 import Enumerator from './enumerator.js'
+import { MonoApiHelper } from 'frida-mono-kit'
+// import netstandardModule from './netstandard-module.js'
 
+// var globalState = {};   // used for Kill Screen
 
-// // mono class we want to enumerate
-// var takeDamage = Enumerator.enumerateClass('TakeDamage');
+// var cheatOutput = true; // using "console.log" seems to slow the game down
 
-// // print it out
-// Enumerator.prettyPrint(takeDamage);
+(function () {
+
+    // Enumerator.getAssembly("Common")
+
+    // -- GAME START -------------------------------------------------------------------
+    // var klass = Enumerator.enumerateClass('LeanCloud.Realtime.Internal.WebSocket.LCWebSocketClient');
+    // if (!klass) return;
+    // console.log("klass:" + " " + klass)
+    // MonoApiHelper.Intercept(klass.address, 'Play_1', {
+    //     onEnter: function (args) {
+    //         console.log("Tween.Play...")
+    //     }
+    // });
+
+    // var klass = Enumerator.Test("UIManager");
+
+    var klass = Enumerator.enumerateClass('UIManager');
+    // console.log("klass:" + " " + klass)
+    // if (!klass) return;
+    // MonoApiHelper.Intercept(klass.address, 'Show', {
+    //     onEnter: function (args) {
+    //         console.log("UIManager.Show...")
+    //     }
+    // });
+    // console.log("Intercept suc")
+    // console.log("netstandardModule:");
+    // console.log(netstandardModule);
+
+})()
