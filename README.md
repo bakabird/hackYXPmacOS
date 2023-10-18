@@ -1,4 +1,6 @@
-Progress: ░░░░░░░░░░ 0%
+Progress: ░░░░░░░░░░ -100%
+
+IT JUST IMPOSSIBLE.
 
 # HackYXPMacOS
 
